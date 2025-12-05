@@ -2,6 +2,7 @@ package com.revtickets.controller;
 
 import com.revtickets.dto.AuthRequest;
 import com.revtickets.dto.SignupRequest;
+import com.revtickets.dto.GoogleSignInRequest;
 import com.revtickets.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,10 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> request) {
         authService.resetPasswordWithToken(request.get("token"), request.get("newPassword"));
         return ResponseEntity.ok(Map.of("message", "Password has been reset successfully"));
+    }
+
+    @PostMapping("/google-signin")
+    public ResponseEntity<Map<String, Object>> googleSignIn(@RequestBody GoogleSignInRequest request) {
+        return ResponseEntity.ok(authService.googleSignIn(request));
     }
 }

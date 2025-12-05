@@ -3,6 +3,7 @@ package com.revtickets.service;
 import com.revtickets.config.JwtTokenUtil;
 import com.revtickets.dto.AuthRequest;
 import com.revtickets.dto.SignupRequest;
+import com.revtickets.dto.GoogleSignInRequest;
 import com.revtickets.exception.UnauthorizedException;
 import com.revtickets.model.mysql.PasswordResetToken;
 import com.revtickets.model.mysql.User;
@@ -112,5 +113,38 @@ public class AuthService {
         
         resetToken.setUsed(true);
         tokenRepository.save(resetToken);
+    }
+
+    public Map<String, Object> googleSignIn(GoogleSignInRequest request) {
+        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
+        
+        if (user == null) {
+            // Create new user from Google account
+            user = new User();
+            user.setName(request.getName());
+            user.setEmail(request.getEmail());
+            user.setPhone(request.getPhone() != null ? request.getPhone() : "");
+            user.setGoogleId(request.getGoogleId());
+            user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString())); // Random password for Google users
+            user.setRole("admin@revtickets.com".equals(request.getEmail()) ? User.Role.ADMIN : User.Role.USER);
+            user = userRepository.save(user);
+        } else {
+            // Update existing user with Google ID if not set
+            if (user.getGoogleId() == null) {
+                user.setGoogleId(request.getGoogleId());
+                userRepository.save(user);
+            }
+        }
+        
+        if (user.getIsBlocked() != null && user.getIsBlocked()) {
+            throw new UnauthorizedException("Your account has been blocked. Please contact support.");
+        }
+        
+        String token = jwtTokenUtil.generateToken(user.getEmail(), user.getRole().name());
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("user", user);
+        return response;
     }
 }
