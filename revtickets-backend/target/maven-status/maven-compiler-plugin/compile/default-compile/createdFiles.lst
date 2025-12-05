@@ -62,6 +62,7 @@ com\revtickets\service\ReportService.class
 com\revtickets\controller\VenueController.class
 com\revtickets\dto\BookingRequest.class
 com\revtickets\controller\PaymentController.class
+com\revtickets\dto\GoogleSignInRequest.class
 com\revtickets\mapper\EventMapper.class
 com\revtickets\model\mongo\Notification.class
 com\revtickets\model\mysql\Venue.class

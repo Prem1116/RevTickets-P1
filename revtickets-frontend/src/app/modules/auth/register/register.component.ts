@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/services/auth.service';
+import { GoogleAuthService } from '../../../core/services/google-auth.service';
 
 @Component({
   selector: 'app-register',
@@ -68,6 +69,12 @@ import { AuthService } from '../../../core/services/auth.service';
               {{isLoading ? 'Creating Account...' : 'Sign Up'}}
             </button>
           </form>
+          
+          <div class="divider">
+            <span>OR</span>
+          </div>
+          
+          <div id="google-signin-button" class="google-signin-container"></div>
         </mat-card-content>
         <mat-card-actions>
           <p>Already have an account? <a routerLink="/login">Login here</a></p>
@@ -228,6 +235,38 @@ import { AuthService } from '../../../core/services/auth.service';
       font-weight: 500;
     }
     
+    .divider {
+      text-align: center;
+      margin: 24px 0;
+      position: relative;
+    }
+    
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border-color);
+    }
+    
+    .divider span {
+      background: var(--card-bg);
+      padding: 0 16px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    
+    .google-signin-container {
+      margin: 16px 0;
+    }
+    
+    ::ng-deep .google-signin-container iframe {
+      width: 100% !important;
+      border-radius: 8px !important;
+    }
+    
     @media (max-width: 480px) {
       .register-card {
         max-width: 100%;
@@ -262,13 +301,14 @@ import { AuthService } from '../../../core/services/auth.service';
     }
   `]
 })
-export class RegisterComponent {
+export class RegisterComponent implements AfterViewInit {
   registerForm: FormGroup;
   isLoading = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private googleAuthService: GoogleAuthService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {
@@ -278,6 +318,35 @@ export class RegisterComponent {
       phone: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.googleAuthService.renderGoogleButton('google-signin-button', this.handleGoogleSignIn.bind(this));
+    }, 1000);
+  }
+
+  handleGoogleSignIn(response: any): void {
+    const userInfo = this.googleAuthService.parseJWT(response.credential);
+    if (userInfo) {
+      const googleUser = {
+        name: userInfo.name,
+        email: userInfo.email,
+        phone: '', // Will need to be filled by user
+        googleId: userInfo.sub,
+        picture: userInfo.picture
+      };
+      
+      this.authService.googleSignIn(googleUser).subscribe({
+        next: (response) => {
+          this.snackBar.open('Successfully signed in with Google!', 'Close', { duration: 3000 });
+          this.router.navigate(['/']);
+        },
+        error: (error) => {
+          this.snackBar.open('Google sign-in failed. Please try again.', 'Close', { duration: 3000 });
+        }
+      });
+    }
   }
 
   onSubmit(): void {

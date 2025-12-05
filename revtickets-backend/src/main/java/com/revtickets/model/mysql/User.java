@@ -25,6 +25,8 @@ public class User {
     
     private Boolean isBlocked = false;
     
+    private String googleId;
+    
     public enum Role {
         USER, ADMIN
     }
@@ -49,4 +51,7 @@ public class User {
     
     public Boolean getIsBlocked() { return isBlocked; }
     public void setIsBlocked(Boolean isBlocked) { this.isBlocked = isBlocked; }
+    
+    public String getGoogleId() { return googleId; }
+    public void setGoogleId(String googleId) { this.googleId = googleId; }
 }
