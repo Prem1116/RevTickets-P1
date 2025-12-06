@@ -49,4 +49,16 @@ public class UserService implements UserDetailsService {
         user.setIsBlocked(false);
         userRepository.save(user);
     }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    public User updateUserProfile(String email, User updatedUser) {
+        User user = getUserByEmail(email);
+        user.setName(updatedUser.getName());
+        user.setPhone(updatedUser.getPhone());
+        return userRepository.save(user);
+    }
 }

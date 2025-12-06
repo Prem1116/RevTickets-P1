@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserService } from '../../../core/services/user.service';
 import { User } from '../../../core/models/user.model';
 
 @Component({
@@ -186,6 +187,7 @@ export class ProfileComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private userService: UserService,
     private snackBar: MatSnackBar
   ) {
     this.profileForm = this.fb.group({
@@ -214,28 +216,24 @@ export class ProfileComponent implements OnInit {
     if (this.profileForm.valid && this.currentUser) {
       this.isLoading = true;
       
-      // Update user data
       const updatedUser = {
         ...this.currentUser,
         name: this.profileForm.get('name')?.value,
         phone: this.profileForm.get('phone')?.value
       };
       
-      // Update AuthService
-      this.authService.updateUser(updatedUser);
-      
-      // Update current user and form
-      this.currentUser = updatedUser;
-      this.profileForm.patchValue({
-        name: updatedUser.name,
-        phone: updatedUser.phone
+      this.userService.updateProfile(updatedUser).subscribe({
+        next: (user) => {
+          this.authService.updateUser(user);
+          this.currentUser = user;
+          this.snackBar.open('Profile updated successfully!', 'Close', { duration: 3000 });
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.snackBar.open('Error updating profile', 'Close', { duration: 3000 });
+          this.isLoading = false;
+        }
       });
-      
-      // Simulate API call
-      setTimeout(() => {
-        this.snackBar.open('Profile updated successfully!', 'Close', { duration: 3000 });
-        this.isLoading = false;
-      }, 1000);
     }
   }
 

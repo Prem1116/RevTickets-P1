@@ -24,11 +24,13 @@ services:
     networks:
       - revtickets-network
 
-  app:
-    build: ./revtickets-backend
-    container_name: revtickets-app
+  backend:
+    build:
+      context: ./revtickets-backend
+      dockerfile: Dockerfile
+    container_name: revtickets-backend
     ports:
-      - "8081:8080"
+      - "8080:8080"
     depends_on:
       - mysql
       - mongo
@@ -39,12 +41,31 @@ services:
       - revtickets-network
 
   frontend:
-    build: ./revtickets-frontend
+    build:
+      context: ./revtickets-frontend
+      dockerfile: Dockerfile
     container_name: revtickets-frontend
     ports:
-      - "4200:80"
+      - "4200:4200"
     depends_on:
-      - app
+      - backend
+    networks:
+      - revtickets-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: revtickets-app
+    ports:
+      - "8083:8080"
+      - "4200:4200"
+    depends_on:
+      - mysql
+      - mongo
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydb
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/mydb
     networks:
       - revtickets-network
 

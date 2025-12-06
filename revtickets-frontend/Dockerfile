@@ -1,19 +1,13 @@
-FROM node:18-alpine AS build
+FROM node:18-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install -g @angular/cli && npm install
 
 COPY . .
 
-RUN npm run build
+EXPOSE 4200
 
-FROM nginx:alpine
-
-COPY --from=build /app/dist/revtickets-frontend /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["sh", "-c", "ng serve --host 0.0.0.0 --port 4200"]
