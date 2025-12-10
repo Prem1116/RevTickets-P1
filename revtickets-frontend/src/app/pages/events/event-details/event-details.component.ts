@@ -585,6 +585,22 @@ export class EventDetailsComponent implements OnInit {
       return;
     }
     
+    // Store event data in sessionStorage for QR code generation
+    if (this.event) {
+      sessionStorage.setItem('selectedEvent', JSON.stringify(this.event));
+    }
+    
+    // Find and store the selected show data
+    const selectedShow = this.shows.find(show => show.id.toString() === showId);
+    if (selectedShow) {
+      sessionStorage.setItem('selectedShow', JSON.stringify(selectedShow));
+    }
+    
+    // Store venue data from event if available
+    if (this.event?.venue) {
+      sessionStorage.setItem('selectedVenue', JSON.stringify({ name: this.event.venue }));
+    }
+    
     this.router.navigate(['/booking/seats', showId]);
   }
 

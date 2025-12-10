@@ -260,12 +260,17 @@ export class TicketComponent implements OnInit {
       this.booking = {
         id: Date.now(),
         numberOfSeats: data.selectedSeats.length,
-        seatNumbers: data.selectedSeats.map((seat: any) => `${seat.row}${seat.number}`).join(','),
+        seatNumbers: data.selectedSeats.map((seat: any) => seat.seatNumber || `${seat.row}${seat.number}`).join(','),
         totalAmount: data.totalAmount,
         bookingDate: new Date(),
         status: 'confirmed',
         paymentId: 'PAY' + Date.now(),
-        qrCode: 'QR' + Date.now().toString().slice(-6)
+        qrCode: 'QR' + Date.now().toString().slice(-6),
+        show: {
+          event: data.eventData,
+          showTime: data.showData?.showTime,
+          venue: data.venueData
+        }
       };
       
       // Show success notification and start 11-second countdown
@@ -386,11 +391,35 @@ export class TicketComponent implements OnInit {
   getTicketUrl(): string {
     if (!this.booking) return '';
     
+    // Get event data from sessionStorage if available
+    const eventData = sessionStorage.getItem('selectedEvent');
+    const showData = sessionStorage.getItem('selectedShow');
+    const venueData = sessionStorage.getItem('selectedVenue');
+    
+    let eventTitle = 'N/A';
+    let showTime = 'N/A';
+    let venueName = 'N/A';
+    
+    if (eventData) {
+      const event = JSON.parse(eventData);
+      eventTitle = event.title || event.name || 'Event';
+    }
+    
+    if (showData) {
+      const show = JSON.parse(showData);
+      showTime = show.showTime || show.dateTime || 'N/A';
+    }
+    
+    if (venueData) {
+      const venue = JSON.parse(venueData);
+      venueName = venue.name || 'N/A';
+    }
+    
     const ticketData = {
       bookingId: this.booking.id,
-      event: this.booking.show?.event?.title || 'N/A',
-      showTime: this.booking.show?.showTime || 'N/A',
-      venue: this.booking.show?.venue?.name || 'N/A',
+      event: this.booking.show?.event?.title || eventTitle,
+      showTime: this.booking.show?.showTime || showTime,
+      venue: this.booking.show?.venue?.name || venueName,
       seats: this.booking.seatNumbers,
       amount: this.booking.totalAmount,
       status: this.booking.status,

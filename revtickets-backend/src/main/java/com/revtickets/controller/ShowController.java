@@ -34,6 +34,11 @@ public class ShowController {
     public ResponseEntity<List<Show>> getShowsByVenueId(@PathVariable Long venueId) {
         return ResponseEntity.ok(showService.getShowsByVenueId(venueId));
     }
+    
+    @GetMapping("/today")
+    public ResponseEntity<List<Show>> getTodaysShows() {
+        return ResponseEntity.ok(showService.getTodaysShows());
+    }
 
     @PostMapping
     public ResponseEntity<Show> createShow(@RequestBody Show show) {

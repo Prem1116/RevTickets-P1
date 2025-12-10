@@ -415,10 +415,18 @@ export class CheckoutComponent implements OnInit {
         next: (booking) => {
           this.isProcessing = false;
           this.seatService.clearSelection();
+          // Get event and venue data from sessionStorage
+          const eventData = sessionStorage.getItem('selectedEvent');
+          const showData = sessionStorage.getItem('selectedShow');
+          const venueData = sessionStorage.getItem('selectedVenue');
+          
           sessionStorage.setItem('bookingData', JSON.stringify({
             booking: booking,
             selectedSeats: this.selectedSeats,
-            totalAmount: this.getTotalPrice()
+            totalAmount: this.getTotalPrice(),
+            eventData: eventData ? JSON.parse(eventData) : null,
+            showData: showData ? JSON.parse(showData) : null,
+            venueData: venueData ? JSON.parse(venueData) : null
           }));
           sessionStorage.removeItem('selectedSeats');
           this.router.navigate(['/user/ticket']);

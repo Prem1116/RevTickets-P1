@@ -38,6 +38,10 @@ public class ShowService {
     public List<Show> getShowsByVenueId(Long venueId) {
         return showRepository.findByVenueId(venueId);
     }
+    
+    public List<Show> getTodaysShows() {
+        return showRepository.findTodaysShows();
+    }
 
     public Show createShow(Show show) {
         return showRepository.save(show);

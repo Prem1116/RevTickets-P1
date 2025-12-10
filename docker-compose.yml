@@ -1,78 +1,56 @@
 version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
-    container_name: revtickets-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mydb
+      MYSQL_DATABASE: revtickets
+      MYSQL_USER: revtickets
+      MYSQL_PASSWORD: password
     ports:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - revtickets-network
+      - revticket-network
 
-  mongo:
+  mongodb:
     image: mongo:7.0
-    container_name: revtickets-mongo
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
     networks:
-      - revtickets-network
+      - revticket-network
 
   backend:
-    build:
-      context: ./revtickets-backend
-      dockerfile: Dockerfile
-    container_name: revtickets-backend
+    build: ./revtickets-backend
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       - mysql
-      - mongo
+      - mongodb
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydb
-      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/mydb
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/revtickets
+      - SPRING_DATASOURCE_USERNAME=revtickets
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/revtickets
     networks:
-      - revtickets-network
+      - revticket-network
 
   frontend:
-    build:
-      context: ./revtickets-frontend
-      dockerfile: Dockerfile
-    container_name: revtickets-frontend
+    build: ./revtickets-frontend
     ports:
-      - "4200:4200"
+      - "4200:80"
     depends_on:
       - backend
     networks:
-      - revtickets-network
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: revtickets-app
-    ports:
-      - "8083:8080"
-      - "4200:4200"
-    depends_on:
-      - mysql
-      - mongo
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydb
-      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/mydb
-    networks:
-      - revtickets-network
+      - revticket-network
 
 volumes:
   mysql_data:
   mongo_data:
 
 networks:
-  revtickets-network:
+  revticket-network:
     driver: bridge
