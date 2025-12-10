@@ -3,10 +3,10 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: revtickets
-      MYSQL_USER: revtickets
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: Prem@1102
+      MYSQL_DATABASE: revtickets_db
+      MYSQL_USER: prem
+      MYSQL_PASSWORD: Prem@1102
     ports:
       - "3307:3306"
     volumes:
@@ -31,9 +31,9 @@ services:
       - mysql
       - mongodb
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/revtickets
-      - SPRING_DATASOURCE_USERNAME=revtickets
-      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/revtickets_db
+      - SPRING_DATASOURCE_USERNAME=prem
+      - SPRING_DATASOURCE_PASSWORD=Prem@1102
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/revtickets
     networks:
       - revticket-network
