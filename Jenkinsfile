@@ -77,7 +77,7 @@ pipeline {
                 sleep(time: 30, unit: 'SECONDS')
                 script {
                     try {
-                        bat 'curl -f http://localhost:8080/api/auth/test || exit 1'
+                        bat 'curl -f http://localhost:8081/api/events || exit 1'
                         bat 'curl -f http://localhost:4200 || exit 1'
                         echo 'Health checks passed!'
                     } catch (Exception e) {
