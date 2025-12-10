@@ -57,7 +57,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                bat 'docker-compose down'
+                bat 'docker-compose down || echo "No containers to stop"'
                 bat 'docker-compose up -d'
             }
         }
@@ -68,8 +68,8 @@ pipeline {
                 sleep(time: 30, unit: 'SECONDS')
                 script {
                     try {
-                        bat 'curl -f http://localhost:8081/api/events || exit 1'
-                        bat 'curl -f http://localhost:4200 || exit 1'
+                        bat 'curl -f http://localhost:8082/api/events || exit 1'
+                        bat 'curl -f http://localhost:4201 || exit 1'
                         echo 'Health checks passed!'
                     } catch (Exception e) {
                         error 'Health checks failed!'
