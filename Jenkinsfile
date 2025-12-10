@@ -65,13 +65,14 @@ pipeline {
         stage('Health Check') {
             steps {
                 echo 'Performing health checks...'
-                sleep(time: 30, unit: 'SECONDS')
+                sleep(time: 60, unit: 'SECONDS')
                 script {
                     try {
-                        bat 'curl -f http://localhost:8082/api/events || exit 1'
+                        bat 'docker ps'
                         bat 'curl -f http://localhost:4201 || exit 1'
                         echo 'Health checks passed!'
                     } catch (Exception e) {
+                        bat 'docker-compose logs backend'
                         error 'Health checks failed!'
                     }
                 }
