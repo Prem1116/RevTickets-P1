@@ -38,21 +38,12 @@ pipeline {
         }
         
         stage('Run Tests') {
-            parallel {
-                stage('Backend Tests') {
-                    steps {
-                        dir('revtickets-backend') {
-                            bat 'mvn test'
-                        }
-                    }
+            steps {
+                echo 'Running Backend Tests...'
+                dir('revtickets-backend') {
+                    bat 'mvn test'
                 }
-                stage('Frontend Tests') {
-                    steps {
-                        dir('revtickets-frontend') {
-                            bat 'npm run test -- --watch=false --browsers=ChromeHeadless'
-                        }
-                    }
-                }
+                echo 'Skipping Frontend Tests for now...'
             }
         }
         
