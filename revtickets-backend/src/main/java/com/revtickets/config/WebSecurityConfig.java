@@ -39,7 +39,10 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configure(http))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/events").permitAll()
                         .requestMatchers("/api/events/**").permitAll()
+                        .requestMatchers("/api/venues").permitAll()
+                        .requestMatchers("/api/venues/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
