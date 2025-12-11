@@ -69,7 +69,7 @@ pipeline {
                 script {
                     try {
                         bat 'docker ps'
-                        bat 'curl -f http://localhost:4201 || exit 1'
+                        bat 'curl -f http://localhost:4200 || exit 1'
                         echo 'Health checks passed!'
                     } catch (Exception e) {
                         bat 'docker-compose logs backend'
