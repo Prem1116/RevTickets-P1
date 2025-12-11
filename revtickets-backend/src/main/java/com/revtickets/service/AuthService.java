@@ -65,10 +65,10 @@ public class AuthService {
         }
 
         User user = new User();
-        user.setName(request.getName());
+        user.setName(request.getFullName().trim());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setPhone(request.getPhone());
+        user.setPhone(request.getPhoneNumber());
         user.setRole("admin@revtickets.com".equals(request.getEmail()) ? User.Role.ADMIN : User.Role.USER);
 
         user = userRepository.save(user);
