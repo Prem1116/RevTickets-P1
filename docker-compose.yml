@@ -35,7 +35,7 @@ services:
       mongodb:
         condition: service_started
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/revtickets_db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://10.153.29.79:3306/revtickets_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=Prem@1102
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/revtickets
